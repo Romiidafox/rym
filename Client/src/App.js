@@ -15,15 +15,18 @@ import Favorite from './components/Favorites/Favorites.jsx';
 function App() {
 
    const navigate = useNavigate();
-   const [access, setAccess] = useState(false);
+   const [access, setAccess] = useState(true);
    const EMAIL = 'romina123@gmail.com';
    const PASSWORD = 'abc12345';
 
    function login(userData) {
-      if (userData.password === PASSWORD && userData.email === EMAIL) {
-         setAccess(true);
-         navigate('/home');
-      }
+      const { email, password } = userData;
+      const URL = 'http://localhost:3001/rickandmorty/login/';
+      axios(URL + `?email=${email}&password=${password}`).then(({ data }) => {
+         const { access } = data;
+         setAccess(access);
+         access && navigate('/home');
+      });
    }
 
    useEffect(() => {
@@ -35,7 +38,7 @@ function App() {
 
    function onSearch(id) {
       console.log(id);
-      axios(`https://rickandmortyapi.com/api/character/${id}`).then(({ data }) => {
+      axios(`http://localhost:3001/rickandmorty/character/${id}`).then(({ data }) => {
 
 
          if (data.name) {
