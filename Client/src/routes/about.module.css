@@ -1,0 +1,47 @@
+
+.buttonLinkedin {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.buttonLinkedin button {
+  background-color: #0b68c6;
+  border: 200px;
+  cursor: pointer;
+  color: #fff;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  transition: transform 0.3s ease-in-out;
+  border-radius: 200px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+
+.buttonLinkedin button:hover {
+  transform: scale(1.1);
+}
+
+.buttonGithub button {
+  background-color: #121d27;
+  border: 200px;
+  cursor: pointer;
+  color: #fff;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: "Arial", sans-serif;
+  transition: transform 0.3s ease-in-out;
+  border-radius: 200px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+
+.buttonGithub button:hover {
+  transform: scale(1.1);
+}
+
+.about {
+  height: auto;
+}

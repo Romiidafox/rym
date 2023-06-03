@@ -1,86 +1,137 @@
 import './App.css';
+import axios from 'axios'
+import {Routes , Route , useLocation , useNavigate} from 'react-router-dom'
+import { useState , useEffect } from 'react';
 import Cards from './components/Cards/Cards.jsx';
-import Nav from './components/Nav/Nav.jsx';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Routes, Route } from 'react-router-dom';
-import About from './components/about/About';
-import Detail from './components/detail/Detail';
-import { useLocation, useNavigate } from 'react-router-dom';
+import NavBar from './components/NavBar/NavBar';
+
+import Details from './routes/details'
+import About from './routes/about'
 import Form from './components/Form/Form';
-import Favorite from './components/Favorites/Favorites.jsx';
-
-
+import Favorite from './components/Favorites/Favorites';
 
 function App() {
+   const [characters,setCharacters] = useState([])
+   
+   const [access, setAccess] = useState(false);
 
+   
+   // function login(userData) {
+      //    if (userData.password === PASSWORD && userData.email === EMAIL) {
+         //       setAccess(true);
+         //       navigate('/home');
+         //    }
+         // }
+         
    const navigate = useNavigate();
-   const [access, setAccess] = useState(true);
-   const EMAIL = 'romina123@gmail.com';
-   const PASSWORD = 'abc12345';
+   
+   // function login(userData) {
+   //    const { email, password } = userData;
+   //    const URL = 'http://localhost:3001/rickandmorty/login/';
+   //    axios(URL + `?email=${email}&password=${password}`).then(({ data }) => {
+   //       const { access } = data;
+   //       console.log(access)
+   //       setAccess(data);
+   //       access && navigate('/home');
+   //    });
+   // }
 
-   function login(userData) {
-      const { email, password } = userData;
+   //LOGIN CON ASYNC AWAIT
+   const login = async (userData)=>{
+      const {email,password} = userData;
       const URL = 'http://localhost:3001/rickandmorty/login/';
-      axios(URL + `?email=${email}&password=${password}`).then(({ data }) => {
-         const { access } = data;
-         setAccess(access);
-         access && navigate('/home');
-      });
+      const { data } = await axios(URL + `?email=${email}&password=${password}`);
+      
+      const { access } = data;
+      setAccess(data);
+      access && navigate('/home');
+   }
+
+   function logout(){
+      setAccess(false);
+      navigate('/')
    }
 
    useEffect(() => {
       !access && navigate('/');
    }, [access]);
 
-   const [characters, setCharacters] = useState([]);
-
-
-   function onSearch(id) {
-      console.log(id);
-      axios(`http://localhost:3001/rickandmorty/character/${id}`).then(({ data }) => {
-
-
-         if (data.name) {
-            // Buscar si el personaje ya está en el array
-            const characterExists = characters.find(char => char.id === data.id);
-            if (characterExists) {
-               window.alert('¡Este personaje ya está en pantalla!');
-            } else {
-               setCharacters(oldChars => [...oldChars, data]);
-            }
-         } else {
-            window.alert('¡No hay personajes con este ID!');
-         }
-      });
+   // function onSearch(id) {
+      
+   //    axios(`https://rickandmortyapi.com/api/character/${id}`).then(({ data }) => {
+   //       if (data.name) {
+   //          setCharacters((oldChars) => [...oldChars, data]);
+   //       } else {
+   //          window.alert('¡No hay personajes con este ID!');
+   //       }
+   //    });
+   // }
+   // function onSearch(id) {
+   //    axios(`http://127.0.0.1:3001/rickandmorty/character/${id}`).then(
+   //      ({ data }) => {
+   //        const respuesta = verificarPersonaje(data.id, characters);
+   //        if (respuesta === true) window.alert("El personaje ya existe no se puede repetir");
+   //        else {
+   //          if (data.id) setCharacters((oldChars) => [...oldChars, data]);
+   //          else window.alert("¡No hay personajes con este ID!");
+   //        }
+   //      }
+   //    );
+   //  }
+   
+   //OnSearch con ASYNC AWAIT
+   const onSearch = async (id) => {
+      try {
+         const {data} = await axios(`http://127.0.0.1:3001/rickandmorty/character/${id}`)
+         verificarPersonaje(data.id,characters)
+         ? window.alert('¡Este personaje ya ha sido agregado!')
+         : data.id && setCharacters((oldChars) => [...oldChars, data])
+                
+      } catch (error) {
+         window.alert('¡No existen personajes con este ID!') 
+      }
    }
+
+
+
+   const verificarPersonaje = (id, characters) => {
+      let aux = false;
+      for (const i of characters) {
+        if (id === i.id) {
+          aux = true;
+          break;
+        }
+      }
+      return aux;
+    };
+   
+   
+      // const onClose = (id) => {
+      //    const pepe =parseInt(id);
+      //    const data = characters.filter(capi=>capi.id !== pepe);
+      //    setCharacters(data);
+      // };
 
    function onClose(id) {
-      setCharacters((oldChars) => oldChars.filter((char) => char.id !== id));
+      
+      setCharacters((oldChars)=> oldChars.filter((char)=> char.id!==id))
    }
-
-   const { pathname } = useLocation()
-
-
+      const {pathname} = useLocation()
 
    return (
       <div className='App'>
-
-         {pathname !== '/' ? <Nav onSearch={onSearch} /> : ''}
-
-         <Routes>
-            <Route path='/home' element={<Cards characters={characters} onClose={onClose} />} />
-            <Route path='/about' element={<About />} />
-            <Route path='/detail/:id' element={<Detail />} />
-            <Route path='/' element={<Form login={login} />} />
-            <Route path='/favorite' element={<Favorite />} />
-         </Routes>
+         {pathname!=='/' ? <NavBar onSearch ={onSearch} logout={logout}/> :''}
+                  
+      <Routes>
+         <Route path='/' element={<Form login={login} />} />
+         <Route path='/home' element={<Cards characters={characters} onClose ={onClose}/>}/>
+         <Route path='/about' element={<About/>} />
+         <Route path='/favorite' element={<Favorite/>} />
+         <Route path='/details/:id' element={<Details />}/> 
+      </Routes>
       </div>
+
    );
 }
 
-
-
-
 export default App;
-
